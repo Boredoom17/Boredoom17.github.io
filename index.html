@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>fadang.me</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --fg: #f0ede6;
+      --accent: #ff4d00;
+      --muted: #333;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.4;
+    }
+
+    /* Grid lines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      text-align: center;
+      z-index: 10;
+      padding: 2rem;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+
+    .title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 18vw, 14rem);
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+      position: relative;
+    }
+
+    .title span {
+      color: var(--accent);
+      display: inline-block;
+      animation: flicker 4s infinite 2s;
+    }
+
+    .subtitle {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: #888;
+      margin-top: 1.5rem;
+      font-style: italic;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.7s;
+    }
+
+    .cooking {
+      margin-top: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 1s;
+    }
+
+    .cooking-text {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--fg);
+    }
+
+    .dots span {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: pulse 1.4s infinite ease-in-out;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    .line {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -1.5rem;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.9s;
+    }
+
+    /* Floating letters in background */
+    .bg-letters {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .bg-letter {
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 12vw, 10rem);
+      color: rgba(255,255,255,0.015);
+      animation: drift linear infinite;
+      user-select: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes flicker {
+      0%, 95%, 100% { opacity: 1; }
+      96% { opacity: 0.3; }
+      97% { opacity: 1; }
+      98% { opacity: 0.2; }
+      99% { opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes drift {
+      from { transform: translateY(110vh) rotate(-10deg); }
+      to { transform: translateY(-20vh) rotate(10deg); }
+    }
+
+    .corner {
+      position: fixed;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: #333;
+      text-transform: uppercase;
+    }
+    .corner.tl { top: 1.5rem; left: 1.5rem; }
+    .corner.br { bottom: 1.5rem; right: 1.5rem; }
+
+    /* scanline */
+    .scanline {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.15;
+      animation: scan 6s linear infinite;
+      z-index: 200;
+    }
+    @keyframes scan {
+      from { top: -2px; }
+      to { top: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="scanline"></div>
+
+  <div class="bg-letters" id="bgLetters"></div>
+
+  <span class="corner tl">fadang.me</span>
+  <span class="corner br">© 2026</span>
+
+  <div class="container">
+    <p class="tag">⚠ work in progress</p>
+    <h1 class="title">
+      SOME<span>-</span><br/>THING'S<br/>COOK<span>ING</span>
+    </h1>
+    <div class="line"></div>
+    <p class="subtitle">check back soon. big things take time.</p>
+    <div class="cooking">
+      <span class="cooking-text">loading something real</span>
+      <div class="dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    // Floating background letters
+    const letters = 'FADANGBOREDOOM';
+    const bg = document.getElementById('bgLetters');
+    for (let i = 0; i < 10; i++) {
+      const el = document.createElement('div');
+      el.className = 'bg-letter';
+      el.textContent = letters[Math.floor(Math.random() * letters.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (20 + Math.random() * 30) + 's';
+      el.style.animationDelay = (-Math.random() * 30) + 's';
+      bg.appendChild(el);
+    }
+  </script>
+</body>
+</html>
